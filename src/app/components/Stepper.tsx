@@ -1,6 +1,10 @@
 "use client";
 import HSStepper from "@preline/stepper";
 import { useEffect, useRef } from "react";
+import CompanyInfoForm from "./CompanyInfoForm";
+import ApplicantInfoForm from "./ApplicantInfoForm";
+import UploadDocumentForm from "./UploadDocumentForm";
+import TermsConditionsForm from "./TermsConditionsForm";
 
 function Stepper() {
   const stepperElRef = useRef<HTMLDivElement | null>(null);
@@ -22,7 +26,9 @@ function Stepper() {
         >
           <div className="min-w-7 min-h-7 flex flex-col items-center md:w-full md:inline-flex md:flex-wrap md:flex-row text-xs align-middle ">
             <span className="hs-stepper-active:bg-purple-600 hs-stepper-active:text-white hs-stepper-success:bg-purple-600 hs-stepper-success:text-white size-7 flex justify-center items-center flex-shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full">
-              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">1</span>
+              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
+                1
+              </span>
               <svg
                 className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
                 xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +62,9 @@ function Stepper() {
         >
           <div className="min-w-7 min-h-7 flex flex-col items-center md:w-full md:inline-flex md:flex-wrap md:flex-row text-xs align-middle">
             <span className="hs-stepper-active:bg-purple-600 hs-stepper-active:text-white hs-stepper-success:bg-purple-600 hs-stepper-success:text-white size-7 flex justify-center items-center flex-shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full">
-              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">2</span>
+              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
+                2
+              </span>
               <svg
                 className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
                 xmlns="http://www.w3.org/2000/svg"
@@ -90,7 +98,9 @@ function Stepper() {
         >
           <div className="min-w-7 min-h-7 flex flex-col items-center md:w-full md:inline-flex md:flex-wrap md:flex-row text-xs align-middle">
             <span className="hs-stepper-active:bg-purple-600 hs-stepper-active:text-white hs-stepper-success:bg-purple-600 hs-stepper-success:text-white size-7 flex justify-center items-center flex-shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full">
-              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">3</span>
+              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
+                3
+              </span>
               <svg
                 className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
                 xmlns="http://www.w3.org/2000/svg"
@@ -123,7 +133,9 @@ function Stepper() {
         >
           <div className="min-w-7 min-h-7 flex flex-col items-center md:w-full md:inline-flex md:flex-wrap md:flex-row text-xs align-middle">
             <span className="hs-stepper-active:bg-purple-600 hs-stepper-active:text-white hs-stepper-success:bg-purple-600 hs-stepper-success:text-white size-7 flex justify-center items-center flex-shrink-0 bg-gray-100 font-medium text-gray-800 rounded-full">
-              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">4</span>
+              <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
+                4
+              </span>
               <svg
                 className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
                 xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +169,7 @@ function Stepper() {
     }'
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <h3 className="text-gray-500">First content</h3>
+            <CompanyInfoForm />
           </div>
         </div>
 
@@ -168,7 +180,7 @@ function Stepper() {
           style={{ display: "none" }}
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <h3 className="text-gray-500">Second content</h3>
+            <ApplicantInfoForm />
           </div>
         </div>
 
@@ -178,8 +190,8 @@ function Stepper() {
     }'
           style={{ display: "none" }}
         >
-          <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <h3 className="text-gray-500">Third content</h3>
+          <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+            <UploadDocumentForm />
           </div>
         </div>
 
@@ -200,7 +212,7 @@ function Stepper() {
           style={{ display: "none" }}
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <h3 className="text-gray-500">Final content</h3>
+            <TermsConditionsForm />
           </div>
         </div>
 
