@@ -1,11 +1,12 @@
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 import Input from "./Input";
+import { SME } from "./Stepper";
 
 function ApplicantInfoForm({
   register,
   errors
 }: {
-  register: UseFormRegister<FieldValues>;
+  register: UseFormRegister<FieldValues & SME>;
   errors: FieldErrors<FieldValues>;
 }) {
   return (

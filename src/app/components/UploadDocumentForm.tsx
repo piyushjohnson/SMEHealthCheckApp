@@ -8,6 +8,7 @@ import {
 } from "react-hook-form";
 import UploadFile, { GenericFile } from "./UploadFile";
 import { fileListToArray } from "./utils";
+import { SME } from "./Stepper";
 
 export function MdiFileUploadOutline(props: SVGProps<SVGSVGElement>) {
   return (
@@ -48,9 +49,9 @@ function UploadDocumentForm({
   errors,
   control,
 }: {
-  register: UseFormRegister<FieldValues>;
+  register: UseFormRegister<FieldValues & SME>;
   errors: FieldErrors<FieldValues>;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues & SME, any>;
 }) {
   const [selectedFiles, setSelectedFiles] = useState<GenericFile[]>([]);
 
@@ -62,10 +63,9 @@ function UploadDocumentForm({
         errorMessage = error.message as unknown as string;
       }
     } else {
-    errorMessage = error as unknown as string;
+      errorMessage = error as unknown as string;
     }
   }
-
 
   return (
     <div className="w-full h-full flex flex-row gap-4">

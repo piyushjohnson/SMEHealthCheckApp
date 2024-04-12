@@ -5,12 +5,13 @@ import {
   UseFormRegister,
   useForm,
 } from "react-hook-form";
+import { SME } from "./Stepper";
 
 function CompanyInfoForm({
   register,
   errors,
 }: {
-  register: UseFormRegister<FieldValues>;
+  register: UseFormRegister<FieldValues & SME>;
   errors: FieldErrors<FieldValues>;
 }) {
   return (

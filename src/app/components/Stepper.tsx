@@ -1,15 +1,17 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import HSStepper from "@preline/stepper";
 import { useEffect, useRef, useState } from "react";
-import CompanyInfoForm from "./CompanyInfoForm";
-import ApplicantInfoForm from "./ApplicantInfoForm";
-import UploadDocumentForm from "./UploadDocumentForm";
-import TermsConditionsForm from "./TermsConditionsForm";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { createSME } from "../actions";
+import ApplicantInfoForm from "./ApplicantInfoForm";
+import CompanyInfoForm from "./CompanyInfoForm";
+import TermsConditionsForm from "./TermsConditionsForm";
+import UploadDocumentForm from "./UploadDocumentForm";
+import { useServerAction } from "../hooks/useServerAction";
 
-const schema = z.object({
+const SMESchema = z.object({
   UEN: z
     .string({ required_error: "Provide valid UEN number" })
     .length(9, "UEN number should be of 9 chars")
@@ -23,7 +25,9 @@ const schema = z.object({
   FullName: z
     .string({ required_error: "Provide valid position in company" })
     .regex(/\w.*\s\w.*/, "Provide valid full name followed by spaces"),
-  PositionInCompany: z.string().min(2, "Provide position in company with atleast 2 chars"),
+  PositionInCompany: z
+    .string()
+    .min(2, "Provide position in company with atleast 2 chars"),
   Email: z
     .string({ required_error: "Provide valid email" })
     .email("Provide a valid email format john@gmail.com")
@@ -45,9 +49,11 @@ const schema = z.object({
     errorMap: () => ({ message: "You must accept the terms & conditions" }),
   }),
 });
+export type SME = z.infer<typeof SMESchema>;
 
 function Stepper() {
   const stepperElRef = useRef<HTMLDivElement | null>(null);
+  const [createSMEAction, isPending] = useServerAction(createSME);
   const [hsStepper, setHsStepper] = useState<HSStepper | null>(null);
   const {
     register,
@@ -55,12 +61,24 @@ function Stepper() {
     trigger,
     control,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
+  } = useForm<FieldValues & SME>({
+    resolver: zodResolver(SMESchema),
   });
 
-  const onSubmit:SubmitHandler<FieldValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FieldValues & SME> = (data) => {
+    console.log("Submit", data);
+    const payload = Object.assign<{ DocumentsFormData: FormData }, SME>(
+      { DocumentsFormData: new FormData() },
+      data as SME
+    );
+    // @ts-ignore
+    delete payload.Documents;
+    const formData = new FormData();
+    data.Documents.forEach((document) =>
+      formData.append("smeDocuments", document, document.name)
+    );
+    payload.DocumentsFormData = formData;
+    createSMEAction(payload);
   };
 
   function goToNext(inputFieldNames: string[]) {
@@ -179,149 +197,161 @@ function Stepper() {
         </li>
       </ul>
 
-      <form
-        className="mt-5 sm:mt-8"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <div
-          data-hs-stepper-content-item='{
+      {isPending ? (
+        <div className="h-full w-full flex justify-center items-center">
+          <div
+            className="animate-spin inline-block size-8 border-[3px] border-current border-t-transparent text-blue-600 rounded-full dark:text-blue-500"
+            role="status"
+            aria-label="loading"
+          >
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      ) : (
+        <form
+          className="mt-5 sm:mt-8"
+          onSubmit={handleSubmit(onSubmit, (errors) => console.log(errors))}
+        >
+          <div
+            data-hs-stepper-content-item='{
       "index": 1
     }'
-        >
-          <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <CompanyInfoForm register={register} errors={errors} />
+          >
+            <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+              <CompanyInfoForm register={register} errors={errors} />
+            </div>
           </div>
-        </div>
 
-        <div
-          data-hs-stepper-content-item='{
+          <div
+            data-hs-stepper-content-item='{
       "index": 2
     }'
-          style={{ display: "none" }}
-        >
-          <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <ApplicantInfoForm register={register} errors={errors} />
-          </div>
-        </div>
-
-        <div
-          data-hs-stepper-content-item='{
-      "index": 3
-    }'
-          style={{ display: "none" }}
-        >
-          <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <UploadDocumentForm
-              register={register}
-              errors={errors}
-              control={control}
-            />
-          </div>
-        </div>
-
-        <div
-          data-hs-stepper-content-item='{
-      "index": 4
-    }'
-          style={{ display: "none" }}
-        >
-          <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <TermsConditionsForm register={register} errors={errors} />
-          </div>
-        </div>
-        <div
-          data-hs-stepper-content-item='{
-      "isFinal": true
-    }'
-          style={{ display: "none" }}
-        >
-          <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            Thank you for submission
-          </div>
-        </div>
-
-        <div className="mt-5 flex justify-between items-center gap-x-2">
-          <button
-            type="button"
-            className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
-            data-hs-stepper-back-btn=""
-          >
-            <svg
-              className="flex-shrink-0 size-4"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m15 18-6-6 6-6"></path>
-            </svg>
-            Back
-          </button>
-          <button
-            type="button"
-            className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
-            // data-hs-stepper-next-btn=""
-            onClick={(e) => {
-              if (hsStepper) {
-                // TODO: Add currentIndex to HSStepper
-                // @ts-ignore
-                switch (hsStepper.currentIndex) {
-                  case 1: {
-                    goToNext(["UEN", "CompanyName"]);
-                    break;
-                  }
-                  case 2: {
-                    goToNext([
-                      "FullName",
-                      "PositionInCompany",
-                      "Email",
-                      "MobNumber",
-                    ]);
-                    break;
-                  }
-                  case 3: {
-                    goToNext(["Documents"]);
-                    break;
-                  }
-                  case 4: {
-                    goToNext(["IsTermsAccepted"]);
-                    break;
-                  }
-                }
-              }
-            }}
-          >
-            Next
-            <svg
-              className="flex-shrink-0 size-4"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="m9 18 6-6-6-6"></path>
-            </svg>
-          </button>
-          <button
-            type="submit"
-            className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
-            data-hs-stepper-finish-btn=""
             style={{ display: "none" }}
           >
-            Finish
-          </button>
-        </div>
-      </form>
+            <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+              <ApplicantInfoForm register={register} errors={errors} />
+            </div>
+          </div>
+
+          <div
+            data-hs-stepper-content-item='{
+      "index": 3
+    }'
+            style={{ display: "none" }}
+          >
+            <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+              <UploadDocumentForm
+                register={register}
+                errors={errors}
+                control={control}
+              />
+            </div>
+          </div>
+
+          <div
+            data-hs-stepper-content-item='{
+      "index": 4
+    }'
+            style={{ display: "none" }}
+          >
+            <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+              <TermsConditionsForm register={register} errors={errors} />
+            </div>
+          </div>
+          <div
+            data-hs-stepper-content-item='{
+      "isFinal": true
+    }'
+            style={{ display: "none" }}
+          >
+            <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+              Thank you for submission
+            </div>
+          </div>
+
+          <div className="mt-5 flex justify-between items-center gap-x-2">
+            <button
+              type="button"
+              className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none"
+              data-hs-stepper-back-btn=""
+            >
+              <svg
+                className="flex-shrink-0 size-4"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m15 18-6-6 6-6"></path>
+              </svg>
+              Back
+            </button>
+            <button
+              type="button"
+              className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
+              // data-hs-stepper-next-btn=""
+              onClick={(e) => {
+                if (hsStepper) {
+                  // TODO: Add currentIndex to HSStepper
+                  // @ts-ignore
+                  switch (hsStepper.currentIndex) {
+                    case 1: {
+                      goToNext(["UEN", "CompanyName"]);
+                      break;
+                    }
+                    case 2: {
+                      goToNext([
+                        "FullName",
+                        "PositionInCompany",
+                        "Email",
+                        "MobNumber",
+                      ]);
+                      break;
+                    }
+                    case 3: {
+                      goToNext(["Documents"]);
+                      break;
+                    }
+                    case 4: {
+                      goToNext(["IsTermsAccepted"]);
+                      break;
+                    }
+                  }
+                }
+              }}
+            >
+              Next
+              <svg
+                className="flex-shrink-0 size-4"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </button>
+            <button
+              type="submit"
+              className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
+              data-hs-stepper-finish-btn=""
+              style={{ display: "none" }}
+            >
+              Finish
+            </button>
+          </div>
+        </form>
+      )}
     </div>
   );
 }
