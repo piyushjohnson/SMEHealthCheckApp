@@ -1,17 +1,78 @@
 "use client";
 import HSStepper from "@preline/stepper";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CompanyInfoForm from "./CompanyInfoForm";
 import ApplicantInfoForm from "./ApplicantInfoForm";
 import UploadDocumentForm from "./UploadDocumentForm";
 import TermsConditionsForm from "./TermsConditionsForm";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  UEN: z
+    .string({ required_error: "Provide valid UEN number" })
+    .length(9, "UEN number should be of 9 chars")
+    .regex(
+      /\d{8}[A-za-z]{1}/i,
+      "Provide valid format of 8 digits followed by a alphabet"
+    ),
+  CompanyName: z
+    .string({ required_error: "Provide valid company name" })
+    .min(2, "Provide company name wih atleast 2 chars"),
+  FullName: z
+    .string({ required_error: "Provide valid position in company" })
+    .regex(/\w.*\s\w.*/, "Provide valid full name followed by spaces"),
+  PositionInCompany: z.string().min(2, "Provide position in company with atleast 2 chars"),
+  Email: z
+    .string({ required_error: "Provide valid email" })
+    .email("Provide a valid email format john@gmail.com")
+    .min(5, "Provide email with atleast 5 chars"),
+  MobNumber: z
+    .string({ required_error: "Provide valid mobile number" })
+    .regex(
+      /\+65(6|8|9)\d{7}/g,
+      "Provide a valid singapore number (+6561234567)"
+    )
+    .length(11, "Provide mobile number of 11 digits"),
+  Documents: z
+    .array(z.instanceof(File), {
+      required_error: "Upload atleast one document",
+    })
+    .min(1, "Upload atleast one document")
+    .max(6, "Max 6 documents allowed"),
+  IsTermsAccepted: z.literal(true, {
+    errorMap: () => ({ message: "You must accept the terms & conditions" }),
+  }),
+});
 
 function Stepper() {
   const stepperElRef = useRef<HTMLDivElement | null>(null);
+  const [hsStepper, setHsStepper] = useState<HSStepper | null>(null);
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    control,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit:SubmitHandler<FieldValues> = (data) => {
+    console.log(data);
+  };
+
+  function goToNext(inputFieldNames: string[]) {
+    trigger(inputFieldNames, { shouldFocus: true }).then((isValid) => {
+      if (isValid) hsStepper?.goToNext();
+    });
+  }
 
   useEffect(() => {
     if (stepperElRef.current) {
-      new HSStepper(stepperElRef.current);
+      const HSStepperInstance = new HSStepper(stepperElRef.current);
+      setHsStepper(HSStepperInstance);
     }
   }, []);
 
@@ -29,19 +90,8 @@ function Stepper() {
               <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
                 1
               </span>
-              <svg
-                className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <svg className="hidden flex-shrink-0 size-3 hs-stepper-success:block">
+                <use href="check.svg#default" />
               </svg>
             </span>
             <div className="mt-2 w-px h-full md:mt-0 md:ms-2 md:w-full md:h-px md:flex-1 bg-gray-200 group-last:hidden "></div>
@@ -65,19 +115,8 @@ function Stepper() {
               <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
                 2
               </span>
-              <svg
-                className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <svg className="hidden flex-shrink-0 size-3 hs-stepper-success:block">
+                <use href="check.svg#default" />
               </svg>
             </span>
             <div className="mt-2 w-px h-full md:mt-0 md:ms-2 md:w-full md:h-px md:flex-1 bg-gray-200 group-last:hidden "></div>
@@ -101,19 +140,8 @@ function Stepper() {
               <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
                 3
               </span>
-              <svg
-                className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <svg className="hidden flex-shrink-0 size-3 hs-stepper-success:block">
+                <use href="check.svg#default" />
               </svg>
             </span>
             <div className="mt-2 w-px h-full md:mt-0 md:ms-2 md:w-full md:h-px md:flex-1 bg-gray-200 group-last:hidden "></div>
@@ -136,19 +164,8 @@ function Stepper() {
               <span className="hs-stepper-success:hidden hs-stepper-completed:hidden">
                 4
               </span>
-              <svg
-                className="hidden flex-shrink-0 size-3 hs-stepper-success:block"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <polyline points="20 6 9 17 4 12"></polyline>
+              <svg className="hidden flex-shrink-0 size-3 hs-stepper-success:block">
+                <use href="check.svg#default" />
               </svg>
             </span>
             <div className="mt-2 w-px h-full md:mt-0 md:ms-2 md:w-full md:h-px md:flex-1 bg-gray-200 group-last:hidden "></div>
@@ -162,14 +179,17 @@ function Stepper() {
         </li>
       </ul>
 
-      <div className="mt-5 sm:mt-8">
+      <form
+        className="mt-5 sm:mt-8"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <div
           data-hs-stepper-content-item='{
       "index": 1
     }'
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <CompanyInfoForm />
+            <CompanyInfoForm register={register} errors={errors} />
           </div>
         </div>
 
@@ -180,7 +200,7 @@ function Stepper() {
           style={{ display: "none" }}
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <ApplicantInfoForm />
+            <ApplicantInfoForm register={register} errors={errors} />
           </div>
         </div>
 
@@ -191,7 +211,11 @@ function Stepper() {
           style={{ display: "none" }}
         >
           <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <UploadDocumentForm />
+            <UploadDocumentForm
+              register={register}
+              errors={errors}
+              control={control}
+            />
           </div>
         </div>
 
@@ -201,8 +225,8 @@ function Stepper() {
     }'
           style={{ display: "none" }}
         >
-          <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <h3 className="text-gray-500">Fourth content</h3>
+          <div className="p-4 h-fit bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
+            <TermsConditionsForm register={register} errors={errors} />
           </div>
         </div>
         <div
@@ -212,7 +236,7 @@ function Stepper() {
           style={{ display: "none" }}
         >
           <div className="p-4 h-48 bg-gray-50 flex justify-center items-center border border-dashed border-gray-200 rounded-xl">
-            <TermsConditionsForm />
+            Thank you for submission
           </div>
         </div>
 
@@ -241,7 +265,36 @@ function Stepper() {
           <button
             type="button"
             className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
-            data-hs-stepper-next-btn=""
+            // data-hs-stepper-next-btn=""
+            onClick={(e) => {
+              if (hsStepper) {
+                // TODO: Add currentIndex to HSStepper
+                // @ts-ignore
+                switch (hsStepper.currentIndex) {
+                  case 1: {
+                    goToNext(["UEN", "CompanyName"]);
+                    break;
+                  }
+                  case 2: {
+                    goToNext([
+                      "FullName",
+                      "PositionInCompany",
+                      "Email",
+                      "MobNumber",
+                    ]);
+                    break;
+                  }
+                  case 3: {
+                    goToNext(["Documents"]);
+                    break;
+                  }
+                  case 4: {
+                    goToNext(["IsTermsAccepted"]);
+                    break;
+                  }
+                }
+              }
+            }}
           >
             Next
             <svg
@@ -260,23 +313,15 @@ function Stepper() {
             </svg>
           </button>
           <button
-            type="button"
+            type="submit"
             className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
             data-hs-stepper-finish-btn=""
             style={{ display: "none" }}
           >
             Finish
           </button>
-          <button
-            type="reset"
-            className="py-2 px-3 inline-flex items-center gap-x-1 text-sm font-semibold rounded-lg border border-transparent bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50 disabled:pointer-events-none"
-            data-hs-stepper-reset-btn=""
-            style={{ display: "none" }}
-          >
-            Reset
-          </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

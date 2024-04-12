@@ -1,21 +1,13 @@
-import Uploady from "@rpldy/uploady";
-import UploadDropZone from "@rpldy/upload-drop-zone";
-import { asUploadButton } from "@rpldy/upload-button";
-import { forwardRef } from "react";
-import type { SVGProps } from "react";
-
-const UploadButton = asUploadButton(
-  forwardRef<HTMLAnchorElement, React.PropsWithChildren<{ text: string }>>(
-    function UploadLink(props, ref) {
-      console.log(props);
-      return (
-        <a {...props} className="cursor-pointer underline" ref={ref}>
-          {props.children}
-        </a>
-      );
-    }
-  )
-);
+import { useCallback, useState, type SVGProps } from "react";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  FieldValues,
+  UseFormRegister,
+} from "react-hook-form";
+import UploadFile, { GenericFile } from "./UploadFile";
+import { fileListToArray } from "./utils";
 
 export function MdiFileUploadOutline(props: SVGProps<SVGSVGElement>) {
   return (
@@ -34,39 +26,76 @@ export function MdiFileUploadOutline(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-function UploadDocumentForm() {
+export function IcBaselineAddBox(props: SVGProps<SVGSVGElement>) {
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="w-full h-full flex flex-row gap-4"
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      {...props}
     >
-      <Uploady>
-        <UploadDropZone
-          className="w-full h-fit min-h-44 border-2 border-gray-300 bg-gray-100 rounded flex-col flex-1 flex items-center justify-center"
-          onDragOverClassName="bg-gray-500"
-          shouldHandleDrag
-          grouped
-          dropHandler={(e, getFiles) => {
-            const fileList = getFiles();
-            console.log(fileList);
-            return fileList;
+      <path
+        fill="currentColor"
+        d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4z"
+      ></path>
+    </svg>
+  );
+}
+
+function UploadDocumentForm({
+  register,
+  errors,
+  control,
+}: {
+  register: UseFormRegister<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  control: Control<FieldValues, any>;
+}) {
+  const [selectedFiles, setSelectedFiles] = useState<GenericFile[]>([]);
+
+  let errorMessage = "";
+  let error = errors["Documents"];
+  if (error) {
+    if (typeof error === "object") {
+      if (error.message) {
+        errorMessage = error.message as unknown as string;
+      }
+    } else {
+    errorMessage = error as unknown as string;
+    }
+  }
+
+
+  return (
+    <div className="w-full h-full flex flex-row gap-4">
+      <div className="flex-1">
+        <Controller
+          control={control}
+          name="Documents"
+          render={({ field: { onChange, name, ref } }) => {
+            return (
+              <>
+                <UploadFile
+                  selectedFiles={selectedFiles}
+                  title="Upload documents here"
+                  description="documents only"
+                  setSelectedFiles={setSelectedFiles}
+                  acceptedFileTypes={["documents"]}
+                  acceptedMimeTypes={["application/pdf"]}
+                  maxFiles={6}
+                  inputElProps={{ onFieldChange: onChange, name }}
+                  setInputRef={ref}
+                />
+
+                {error && (
+                  <p className="text-xs text-red-600 mt-2">{errorMessage}</p>
+                )}
+              </>
+            );
           }}
-          maxGroupSize={3}
-        >
-          <div className="rounded-full p-2 bg-purple-300">
-            <MdiFileUploadOutline
-              width="2em"
-              height="2em"
-              className="text-purple-600"
-            />
-          </div>
-          <div>
-            <UploadButton text={"Click to Upload"} />
-            <span> </span>
-            <span>or drag and drop bank statements</span>
-          </div>
-        </UploadDropZone>
-      </Uploady>
+        />
+      </div>
       <ul
         className="flex-1 marker:bg-purple-500 pl-5 space-y-2"
         style={{
@@ -94,7 +123,7 @@ function UploadDocumentForm() {
           Please contact us on support@credilinq.ai
         </li>
       </ul>
-    </form>
+    </div>
   );
 }
 
