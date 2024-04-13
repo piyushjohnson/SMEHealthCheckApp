@@ -1,11 +1,11 @@
-import Input from "./Input";
+import Input from "../base/Input";
 import {
   FieldErrors,
   FieldValues,
   UseFormRegister,
   useForm,
 } from "react-hook-form";
-import { SME } from "./Stepper";
+import { SME } from "../stepper/Stepper";
 
 function CompanyInfoForm({
   register,

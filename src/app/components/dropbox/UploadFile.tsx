@@ -8,8 +8,8 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { DocumentFilePreview } from "./DocumentFilePreview";
 import Dropbox, { type OnDropFn } from "./Dropbox";
-import { getFileType, groupBy } from "./utils";
-import { IcBaselineAddBox } from "./UploadDocumentForm";
+import { getFileType, groupBy } from "../utils";
+import { IcBaselineAddBox } from "../forms/UploadDocumentForm";
 import { DropzoneInputProps } from "react-dropzone";
 
 export type GenericFile = {

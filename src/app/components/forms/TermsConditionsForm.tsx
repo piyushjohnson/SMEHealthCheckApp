@@ -4,7 +4,7 @@ import {
   FieldValues,
   UseFormRegister,
 } from "react-hook-form";
-import { SME } from "./Stepper";
+import { SME } from "../stepper/Stepper";
 
 function TermsConditionsForm({
   register,

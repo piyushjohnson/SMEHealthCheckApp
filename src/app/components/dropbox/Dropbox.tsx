@@ -4,8 +4,8 @@ import {
   FileRejection,
   useDropzone,
 } from "react-dropzone";
-import { fileListToArray, getFileType } from "./utils";
-import { MdiFileUploadOutline } from "./UploadDocumentForm";
+import { fileListToArray, getFileType } from "../utils";
+import { MdiFileUploadOutline } from "../forms/UploadDocumentForm";
 import clsx from "clsx";
 import { RefCallback } from "react";
 import {

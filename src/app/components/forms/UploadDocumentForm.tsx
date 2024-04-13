@@ -6,9 +6,9 @@ import {
   FieldValues,
   UseFormRegister,
 } from "react-hook-form";
-import UploadFile, { GenericFile } from "./UploadFile";
-import { fileListToArray } from "./utils";
-import { SME } from "./Stepper";
+import UploadFile, { GenericFile } from "../dropbox/UploadFile";
+import { fileListToArray } from "../utils";
+import { SME } from "../stepper/Stepper";
 
 export function MdiFileUploadOutline(props: SVGProps<SVGSVGElement>) {
   return (
