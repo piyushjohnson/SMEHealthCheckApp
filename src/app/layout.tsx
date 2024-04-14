@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import TopNav from "./components/TopNav";
-import PrelineScript from "./components/PrelineScript";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +21,7 @@ export default function RootLayout({
         <TopNav />
         {children}
       </body>
-      <PrelineScript/>
+      {/* <PrelineScript/> */}
     </html>
   );
 }

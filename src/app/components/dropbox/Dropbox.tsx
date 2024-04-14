@@ -4,7 +4,7 @@ import {
   FileRejection,
   useDropzone,
 } from "react-dropzone";
-import { fileListToArray, getFileType } from "../utils";
+import { fileListToArray, getFileType, omitKeys } from "../utils";
 import { MdiFileUploadOutline } from "../forms/UploadDocumentForm";
 import clsx from "clsx";
 import { RefCallback } from "react";
@@ -169,7 +169,7 @@ function Dropbox({
           </div>
         </div>
         <input
-          {...getInputProps(inputElProps)}
+          {...getInputProps(omitKeys(inputElProps,[ "onFieldChange" ]))}
           onChange={(e) => {
             const files = fileListToArray(e.target.files);
             inputElProps?.onFieldChange?.(files)

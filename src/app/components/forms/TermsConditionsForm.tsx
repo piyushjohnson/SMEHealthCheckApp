@@ -1,10 +1,10 @@
+import { SME } from "@/app/schemas";
 import {
   Control,
   FieldErrors,
   FieldValues,
   UseFormRegister,
 } from "react-hook-form";
-import { SME } from "../stepper/Stepper";
 
 function TermsConditionsForm({
   register,

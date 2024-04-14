@@ -105,8 +105,8 @@ export function groupBy(object: any[], key: string) {
   }, {});
 }
 
-export function fileListToArray(fileList: FileList| null): File[] {
-  const files:File[] = [];
+export function fileListToArray(fileList: FileList | null): File[] {
+  const files: File[] = [];
   if (fileList) {
     const length = fileList.length;
     let idx = 0;
@@ -115,5 +115,18 @@ export function fileListToArray(fileList: FileList| null): File[] {
       if (file) files[idx++] = file;
     }
   }
-  return files
+  return files;
+}
+
+export function omitKeys(obj: any, keys: string[]) {
+  var target: Record<string, any> = {};
+
+  for (var key in obj) {
+    if (keys.indexOf(key) >= 0) continue;
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue;
+
+    target[key] = obj[key];
+  }
+
+  return target;
 }

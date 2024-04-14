@@ -8,7 +8,7 @@ import {
 } from "react-hook-form";
 import UploadFile, { GenericFile } from "../dropbox/UploadFile";
 import { fileListToArray } from "../utils";
-import { SME } from "../stepper/Stepper";
+import { SME } from "@/app/schemas";
 
 export function MdiFileUploadOutline(props: SVGProps<SVGSVGElement>) {
   return (

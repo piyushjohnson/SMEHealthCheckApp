@@ -1,3 +1,4 @@
+import { SME } from "@/app/schemas";
 import Input from "../base/Input";
 import {
   FieldErrors,
@@ -5,7 +6,6 @@ import {
   UseFormRegister,
   useForm,
 } from "react-hook-form";
-import { SME } from "../stepper/Stepper";
 
 function CompanyInfoForm({
   register,

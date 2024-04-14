@@ -16,7 +16,6 @@ async function getAllSME(): Promise<SMEItem[]> {
     headers: {
       Accept: "application/json",
     },
-    cache: 'no-cache'
   })
     .then((response) => {
       if (!response.ok) {
