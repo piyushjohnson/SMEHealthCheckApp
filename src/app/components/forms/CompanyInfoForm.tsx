@@ -15,7 +15,7 @@ function CompanyInfoForm({
   errors: FieldErrors<FieldValues>;
 }) {
   return (
-    <div className="flex flex-row gap-4">
+    <div className="grid sm:grid-cols-2 grid-cols-1 justify-center gap-4">
       <Input
         {...register("UEN", { required: true })}
         error={errors["UEN"]?.message}

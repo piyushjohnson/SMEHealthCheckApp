@@ -68,8 +68,8 @@ function UploadDocumentForm({
   }
 
   return (
-    <div className="w-full h-full flex flex-row gap-4">
-      <div className="flex-1">
+    <div className="w-full h-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
         <Controller
           control={control}
           name="Documents"
@@ -97,7 +97,7 @@ function UploadDocumentForm({
         />
       </div>
       <ul
-        className="flex-1 marker:bg-purple-500 pl-5 space-y-2"
+        className="marker:bg-purple-500 pl-5 space-y-2"
         style={{
           listStyleImage: "url(checkmark.svg)",
         }}

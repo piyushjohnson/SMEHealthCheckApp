@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export type CreateSMEAction = {
@@ -71,5 +72,9 @@ export async function createSME(sme: CreateSMEAction) {
       } else {
         throw new Error("Failed to upload documents");
       }
-    }).then(() => redirect("/sme"));
+    })
+    .then(() => {
+      revalidatePath("/sme");
+      redirect("/sme");
+    });
 }
